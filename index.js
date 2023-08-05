@@ -1,23 +1,84 @@
-/* Your Code Here */
+// Function to create an employee record
+function createEmployeeRecord([firstName, familyName, title, payPerHour]) {
+  return {
+    firstName,
+    familyName,
+    title,
+    payPerHour,
+    timeInEvents: [],
+    timeOutEvents: []
+  };
+}
 
-/*
- We're giving you this function. Take a look at it, you might see some usage
- that's new and different. That's because we're avoiding a well-known, but
- sneaky bug that we'll cover in the next few lessons!
+// Function to create employee records from an array of arrays
+function createEmployeeRecords(arrays) {
+  return arrays.map(createEmployeeRecord);
+}
 
- As a result, the lessons for this function will pass *and* it will be available
- for you to use if you need it!
- */
+// Function to create a time-in event for an employee
+function createTimeInEvent(dateStamp) {
+  if (typeof dateStamp === "string" && dateStamp.trim() !== "") {
+    const [date, hour] = dateStamp.split(' ');
+    this.timeInEvents.push({
+      type: "TimeIn",
+      hour: parseInt(hour, 10),
+      date
+    });
+  }
+  return this;
+}
 
-const allWagesFor = function () {
-    const eligibleDates = this.timeInEvents.map(function (e) {
-        return e.date
-    })
+// Function to create a time-out event for an employee
+function createTimeOutEvent(dateStamp) {
+  if (typeof dateStamp === "string" && dateStamp.trim() !== "") {
+    const [date, hour] = dateStamp.split(' ');
+    this.timeOutEvents.push({
+      type: "TimeOut",
+      hour: parseInt(hour, 10),
+      date
+    });
+  }
+  return this;
+}
 
-    const payable = eligibleDates.reduce(function (memo, d) {
-        return memo + wagesEarnedOnDate.call(this, d)
-    }.bind(this), 0) // <== Hm, why did we need to add bind() there? We'll discuss soon!
+// Function to calculate hours worked on a specific date for an employee
+function hoursWorkedOnDate(date) {
+  const timeInEvent = this.timeInEvents.find(event => event.date === date);
+  const timeOutEvent = this.timeOutEvents.find(event => event.date === date);
 
-    return payable
+  if (timeInEvent && timeOutEvent) {
+    return (timeOutEvent.hour - timeInEvent.hour) / 100;
+  }
+  return 0;
+}
+
+// Function to calculate wages earned on a specific date for an employee
+function wagesEarnedOnDate(date) {
+  const hoursWorked = hoursWorkedOnDate.call(this, date);
+  return hoursWorked * this.payPerHour;
+}
+
+// Function to calculate total wages for an employee
+function allWagesFor() {
+  const eligibleDates = this.timeInEvents.map(function (e) {
+    return e.date;
+  });
+
+  const payable = eligibleDates.reduce((memo, d) => {
+    return memo + wagesEarnedOnDate.call(this, d);
+  }, 0);
+
+  return payable;
+}
+
+// Function to find an employee by their first name in a given array of employee records
+function findEmployeeByFirstName(srcArray, firstName) {
+  return srcArray.find(employee => employee.firstName === firstName);
+}
+
+// Function to calculate total payroll for all employees in an array of employee records
+function calculatePayroll(employeeRecords) {
+  const totalPayroll = employeeRecords.reduce((total, employee) => total + allWagesFor.call(employee), 0);
+  return totalPayroll;
 }
 
